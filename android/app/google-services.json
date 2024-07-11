@@ -1,0 +1,143 @@
+{
+  "project_info": {
+    "project_number": "39947690164",
+    "project_id": "online-books-1c0e0",
+    "storage_bucket": "online-books-1c0e0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:39947690164:android:07dddcf8fa6b03153df7e1",
+        "android_client_info": {
+          "package_name": "com.example.flutter_firabase_book_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCCZnDxO6TYBTRSKJMahuCd73vw7EFyVxU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:39947690164:android:a12595c7ad8f993f3df7e1",
+        "android_client_info": {
+          "package_name": "com.example.flutter_firebase_book_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCCZnDxO6TYBTRSKJMahuCd73vw7EFyVxU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:39947690164:android:86cdd71728815f453df7e1",
+        "android_client_info": {
+          "package_name": "uz.gita.audio_book_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCCZnDxO6TYBTRSKJMahuCd73vw7EFyVxU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:39947690164:android:93b494a2924751fd3df7e1",
+        "android_client_info": {
+          "package_name": "uz.gita.shobdo_kutir"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCCZnDxO6TYBTRSKJMahuCd73vw7EFyVxU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:39947690164:android:8caf5d9732e111133df7e1",
+        "android_client_info": {
+          "package_name": "uz.ikpudev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCCZnDxO6TYBTRSKJMahuCd73vw7EFyVxU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:39947690164:android:833ff3a437c9dbb93df7e1",
+        "android_client_info": {
+          "package_name": "uz.ikpydev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCCZnDxO6TYBTRSKJMahuCd73vw7EFyVxU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:39947690164:android:faca397d02c3445e3df7e1",
+        "android_client_info": {
+          "package_name": "uz.ikpydev.book_app.book_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCCZnDxO6TYBTRSKJMahuCd73vw7EFyVxU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
