@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_firabase_book_app/presenter/screen/main/bottom_navigation.dart';
 import 'package:flutter_firabase_book_app/presenter/screen/splash/splash_bloc.dart';
-import '../main/main.dart';
+import '../login/login_bloc.dart';
+import '../login/login_screen.dart';
 import '../register/register_bloc.dart';
 import '../register/register_screen.dart';
 
@@ -14,8 +16,7 @@ class SplashScreen extends StatelessWidget {
       listener: (context, state) {
         if (state is Authenticated) {
           Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(
-                builder: (context) => const Main()),
+            MaterialPageRoute(builder: (context) => const BottomNavigation()),
             (Route<dynamic> route) => false,
           );
         } else if (state is Unauthenticated) {
@@ -23,38 +24,34 @@ class SplashScreen extends StatelessWidget {
               context,
               MaterialPageRoute(
                   builder: (context) => BlocProvider(
-                        create: (context) => RegisterBloc(),
-                        child: const RegisterScreen(),
-                      ))
-          );
+                        create: (context) => LoginBloc(),
+                        child: const LoginScreen(),
+                      )));
         }
       },
       builder: (context, state) {
-        return Scaffold(
-          body: Column(
-            children: [
-              Expanded(
-                  flex: 3,
-                  child: Container(
-                    width: double.infinity,
-                    height: double.infinity,
-                    decoration: const BoxDecoration(
-                        image: DecorationImage(
-                            image: AssetImage("assets/image_group_bg.png"))),
-                    child: Padding(
-                      padding: const EdgeInsets.all(32.0),
-                      child: Image.asset(
-                        "assets/image_group.png",
+        return SafeArea(
+          child: Scaffold(
+            body: Column(
+              children: [
+                Expanded(
+                    flex: 3,
+                    child: Container(
+                      width: double.infinity,
+                      height: double.infinity,
+                      decoration: const BoxDecoration(image: DecorationImage(image: AssetImage("assets/image_group_bg.png"))),
+                      child: Padding(
+                        padding: const EdgeInsets.all(32.0),
+                        child: Image.asset(
+                          "assets/image_group.png",
+                        ),
                       ),
-                    ),
-                  )),
-              Expanded(
-                  flex: 4,
-                  child: Stack(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(top: 56),
-                        child: Container(
+                    )),
+                Expanded(
+                    flex: 4,
+                    child: Stack(
+                      children: [
+                        Container(
                           height: double.infinity,
                           width: double.infinity,
                           child: Opacity(
@@ -65,56 +62,48 @@ class SplashScreen extends StatelessWidget {
                                 BlendMode.luminosity, // BlendMode turi
                               ),
                               child: Image.asset(
-                                'assets/image_book_splash.png',
-                                fit: BoxFit.fill,
+                                'assets/lottie/book.gif',
+                                fit: BoxFit.cover,
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      Align(
-                        alignment: Alignment.bottomRight,
-                        child: SizedBox(
-                          width: 214,
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.only(bottom: 32.0, right: 24),
-                            child: InkWell(
-                              onTap: () {
-                                print("CheckAuthEvent yuborilmoqda");
-                                context
-                                    .read<SplashBloc>()
-                                    .add(CheckAuthEvent());
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(24),
-                                    color: const Color(0xffF26B6C)),
-                                child: const Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 24.0, vertical: 8),
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        "Get Started ",
-                                        style: TextStyle(
-                                            fontSize: 18, color: Colors.white),
-                                      ),
-                                      Icon(
-                                        Icons.arrow_forward,
-                                        color: Colors.white,
-                                      )
-                                    ],
+                        Align(
+                          alignment: Alignment.bottomRight,
+                          child: SizedBox(
+                            width: 214,
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 32.0, right: 24),
+                              child: InkWell(
+                                onTap: () {
+                                  context.read<SplashBloc>().add(CheckAuthEvent());
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(24), color: const Color(0xffF26B6C)),
+                                  child: const Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 8),
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          "Get Started ",
+                                          style: TextStyle(fontSize: 18, color: Colors.white),
+                                        ),
+                                        Icon(
+                                          Icons.arrow_forward,
+                                          color: Colors.white,
+                                        )
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  ))
-            ],
+                      ],
+                    ))
+              ],
+            ),
           ),
         );
       },

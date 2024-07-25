@@ -1,4 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_firabase_book_app/util/component/my_text.dart';
+import 'package:flutter_firabase_book_app/util/utils.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -11,33 +14,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF26B6C),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white, size: 28),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
+        leading: const SizedBox(width: 20),
+        backgroundColor: redColor,
         title: const Align(
           alignment: Alignment.center,
           child: Text(
-            'Profile',
+            'Profil',
             style: TextStyle(
               color: Colors.white,
-              fontSize: 28,
+              fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
         ),
         actions: [
-          GestureDetector(
+          InkWell(
+              borderRadius: BorderRadius.circular(11),
               onTap: () {},
               child: Image.asset(
                 'assets/edit.png',
-                width: 28,
-                height: 28,
+                width: 22,
+                height: 22,
               )),
           const SizedBox(width: 16)
         ],
@@ -51,8 +50,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   decoration: const BoxDecoration(
                       color: Color(0xFFF26B6C),
                       borderRadius: BorderRadius.only(
-                        bottomRight: Radius.circular(24.0),
-                        bottomLeft: Radius.circular(24.0),
+                        bottomRight: Radius.circular(36.0),
+                        bottomLeft: Radius.circular(36.0),
                       )),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -71,134 +70,55 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ),
                                 fit: BoxFit.cover)),
                       ),
-                      const Padding(
-                          padding: EdgeInsets.only(top: 24.0),
-                          child: Text(
-                            'Maria Akter Dipti',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 32,
-                                fontWeight: FontWeight.bold),
-                          ))
+                      Padding(
+                        padding: const EdgeInsets.only(top: 24.0),
+                        child: MyText.textBold(text: "Muhriddin", color: Colors.white, size: 24),
+                      )
                     ],
                   ))),
-          const Expanded(
+          Expanded(
               flex: 6,
               child: Padding(
-                padding: EdgeInsets.only(left: 24.0, right: 24.0),
+                padding: const EdgeInsets.only(left: 24.0, right: 24.0),
                 child: Column(
                   children: [
-                    SizedBox(
-                      height: 16.0,
-                    ),
-                    Row(children: [
-                      Text(
-                        'User Name',
-                        style:
-                            TextStyle(color: Color(0xFFF26B6C), fontSize: 20),
-                      ),
-                      Spacer(),
-                      Text(
-                        'dipti_2020',
-                        style: TextStyle(color: Colors.black54, fontSize: 20),
-                      ),
-                    ]),
-                    SizedBox(
-                      height: 16.0,
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          'Email',
-                          style:
-                              TextStyle(color: Color(0xFFF26B6C), fontSize: 20),
-                        ),
-                        Spacer(),
-                        Text(
-                          'mariadipti@gmail.com',
-                          style: TextStyle(color: Colors.black54, fontSize: 20),
-                        )
-                      ],
-                    ),
-                    SizedBox(
-                      height: 16.0,
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          'Change password',
-                          style:
-                              TextStyle(color: Color(0xFFF26B6C), fontSize: 20),
-                        ),
-                        Spacer(),
-                        Icon(
-                          Icons.arrow_forward_ios,
-                          size: 24,
-                          color: Colors.black54,
-                        )
-                      ],
-                    ),
-                    SizedBox(
-                      height: 16.0,
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          'Notification',
-                          style:
-                              TextStyle(color: Color(0xFFF26B6C), fontSize: 20),
-                        ),
-                        Spacer(),
-                        Icon(
-                          Icons.notifications_none,
-                          size: 24,
-                          color: Colors.black54,
-                        )
-                      ],
-                    ),
-                    SizedBox(
-                      height: 16.0,
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          'Enable Dark Mode',
-                          style:
-                              TextStyle(color: Color(0xFFF26B6C), fontSize: 20),
-                        ),
-                        Spacer(),
-                        Icon(
-                          Icons.dark_mode_outlined,
-                          color: Colors.black54,
-                        )
-                      ],
-                    ),
-                    SizedBox(
-                      height: 16.0,
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          'Settings',
-                          style:
-                              TextStyle(color: Color(0xFFF26B6C), fontSize: 20),
-                        ),
-                        Spacer(),
-                        Icon(
-                          Icons.settings,
-                          size: 24,
-                          color: Colors.black54,
-                        )
-                      ],
-                    ),
-                    SizedBox(
-                      height: 16.0,
-                    ),
+                    SizedBox(height: 24),
+                    rowText(title: "Ismingiz", endName: "Muhriddin"),
+                    rowText(title: "Elektron pochta", endName: "muhriddin@gmail.com"),
+                    rowTextEndIcon(
+                        title: "Qorong'i rejimni yoqing",
+                        icon: Switch(
+                            value: true,
+                            inactiveThumbColor: Colors.black38,
+                            inactiveTrackColor: Colors.black12,
+                            activeColor: redColor,
+                            onChanged: (value) {}))
                   ],
                 ),
               ))
         ],
       ),
+    );
+  }
+
+  Widget rowText({required String title, required String endName}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12.0),
+      child: Row(children: [
+        MyText.textBold(text: title, color: redColor, size: 18),
+        const Spacer(),
+        Text(
+          endName,
+          style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color, fontSize: 16),
+        ),
+      ]),
+    );
+  }
+
+  Widget rowTextEndIcon({required String title, required Widget icon}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(children: [MyText.textBold(text: title, color: redColor, size: 18), const Spacer(), icon]),
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../data/model/book_data.dart';
+import '../../data/model/book_data.dart';
 
 class RepositoryBook {
 

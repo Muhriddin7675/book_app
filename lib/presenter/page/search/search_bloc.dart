@@ -1,30 +1,29 @@
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
+import 'package:flutter_firabase_book_app/util/utils.dart';
 
 import '../../../data/model/book_data.dart';
-import '../../../domain/repository_book.dart';
+import '../../../domain/impl/repository_book.dart';
 
 part 'search_event.dart';
 
 part 'search_state.dart';
 
 class SearchBloc extends Bloc<SearchEvent, SearchState> {
-  SearchBloc() : super(SearchLoading()) {
+  SearchBloc() : super(SearchState(status: Status.LOADING)) {
     var bookRepository = RepositoryBook();
+    on<SearchCursorEvent>((event, emit) async {
+      emit(state.copyWith(status: Status.LOADING));
 
-    on<SearchEvent>((event, emit) async {
-      emit(SearchLoading());
       try {
         final books = await bookRepository.getBooks();
-        var searchBooks = books.where((element) => element.name.toLowerCase().startsWith(event.cursor.toLowerCase()))
-            .toList();
-
-        print(searchBooks);
-        print(event.cursor);
-
-        emit(SearchLoaded(searchBooks));
+        if (event.cursor.isNotEmpty) {
+          var searchBooks = books.where((element) => element.name.toLowerCase().startsWith(event.cursor.toLowerCase())).toList();
+          emit(state.copyWith(status: Status.SUCCESS, books: searchBooks));
+        } else {
+          emit(state.copyWith(status: Status.SUCCESS, books: books));
+        }
       } catch (e) {
-        emit(SearchError(e.toString()));
+        emit(state.copyWith(status: Status.ERROR, errorMessage: e.toString()));
       }
     });
   }

@@ -1,7 +1,9 @@
 part of 'search_bloc.dart';
 
+abstract class SearchEvent {}
 
-class SearchEvent {
-  String cursor;
-  SearchEvent(this.cursor);
+class SearchCursorEvent extends SearchEvent {
+  final String cursor;
+
+  SearchCursorEvent({required this.cursor});
 }

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_firabase_book_app/presenter/page/search/search_bloc.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 
-import '../../screen/now_playing/now_playing_screen.dart';
+import '../../../util/component/book_item.dart';
+import '../../../util/component/book_shimmer.dart';
+import '../../../util/utils.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -12,20 +15,25 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  late TextEditingController _searchController;
+  final TextEditingController _searchController = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
-    _searchController = TextEditingController();
+    _init();
+    // Qo'shimcha kod - TextEditingController va FocusNode ni qayta sozlash
+    _searchController.clear();
+    _focusNode.unfocus();
   }
 
-  void _handleTextChanged() {
-    setState(() {});
+  void _init() {
+    context.read<SearchBloc>().add(SearchCursorEvent(cursor: ""));
   }
 
   @override
   void dispose() {
+    _focusNode.dispose();
     _searchController.dispose();
     super.dispose();
   }
@@ -33,98 +41,128 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              keyboardType: TextInputType.name,
-              controller: _searchController,
-              onChanged: (value) => {
-                context.read<SearchBloc>().add(SearchEvent(value)),
-                _handleTextChanged()
-              },
-              cursorColor: const Color(0xffe95757),
-              decoration: InputDecoration(
-                border: const OutlineInputBorder(),
-                suffixIcon: InkWell(
-                  onTap: () {
-                    _searchController.text = '';
-                  },
-                  child: const Icon(
-                    Icons.cancel,
-                    color: Color(0xff8E8E93),
-                  ),
-                ),
-                labelText: 'search books',
+      backgroundColor: Theme.of(context).colorScheme.background,
+      body: SafeArea(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+              child: KeyboardVisibilityBuilder(
+                builder: (_ , bool isKeyboardVisible) {
+                  if(!isKeyboardVisible){
+                    _focusNode.unfocus();
+                  }else{
+
+                  }
+
+                  return TextFormField(
+                    focusNode: _focusNode,
+                    controller: _searchController,
+                    onChanged: (value) {
+                      context.read<SearchBloc>().add(SearchCursorEvent(cursor: value));
+                      setState(() {});
+                    },
+                    textInputAction: TextInputAction.next,
+                    style: TextStyle(
+                      color: tintColor,
+                      fontSize: 12,
+                      fontFamily: 'Uni Neue',
+                      fontWeight: FontWeight.w500,
+                    ),
+                    decoration: InputDecoration(
+                      fillColor: const Color(0xFFF3F3F3),
+                      filled: false,
+                      focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: redColor,
+                            width: 1,
+                          )),
+                      hintText: 'kitoblarni qidirish',
+                      hintStyle: TextStyle(
+                        color: tintColor,
+                        fontSize: 12,
+                        fontFamily: 'Uni Neue',
+                        fontWeight: FontWeight.w500,
+                      ),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      prefixIcon: const Icon(Icons.arrow_back),
+                      prefixIconColor: tintColor,
+                    ),
+                  );
+
+                },
               ),
             ),
-          ),
-          Expanded(child: BlocBuilder<SearchBloc, SearchState>(
-            builder: (context, state) {
-              if (state is SearchLoading) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              else if (state is SearchLoaded) {
-                return SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 4),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                        child: GridView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3,
-                            crossAxisSpacing: 4,
-                            mainAxisSpacing: 4,
-                            childAspectRatio: 3 / 4,
-                          ),
-                          itemCount: state.books.length,
-                          itemBuilder: (context, index) {
-                            return InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => NowPlayingScreen(
-                                            bookList: state.books, index: index)));
-                              },
-                              child: Card(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                shadowColor: Colors.white54,
-                                elevation: 10,
-                                child: Container(
-                                  height: 146,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12),
-                                    image: DecorationImage(
-                                      image: NetworkImage(state.books[index].image),
-                                      fit: BoxFit.fill,
-                                    ),
-                                  ),
-                                ),
+            SizedBox(height: 8),
+            BlocBuilder<SearchBloc, SearchState>(
+              builder: (context, state) {
+                if (state.status == Status.ERROR) {
+                  return Container();
+                } else if (state.books != null &&  state.books!.isEmpty) {
+                  var width = MediaQuery.of(context).size.width / 2;
+                  return Expanded(
+                    child: Center(
+                      child: Image.asset("assets/empty.png", height: width, width: width),
+                    ),
+                  );
+                } else {
+                  var fullSize = state.books?.length ?? 6;
+                  var temp = (fullSize % 3 == 0) ? 0 : 1;
+                  var size = (fullSize ~/ 3) + temp;
+                  return SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        for (int i = 0; i < size; i++)
+                          Column(
+                            children: [
+                              Row(
+                                children: [
+                                  if ((i * 3) < fullSize)
+                                    Padding(
+                                        padding: const EdgeInsets.only(left: 20.0),
+                                        child: (state.status == Status.SUCCESS)
+                                            ? BookItem(
+                                                book: state.books ?? [],
+                                                tag: 'search',
+                                                index: (i * 3),
+                                              )
+                                            : const BookShimmer()),
+                                  if ((i * 3) + 1 < fullSize)
+                                    Padding(
+                                        padding: const EdgeInsets.only(left: 20.0),
+                                        child: (state.status == Status.SUCCESS)
+                                            ? BookItem(
+                                                book: state.books ?? [],
+                                                tag: 'search',
+                                                index: (i * 3) + 1,
+                                              )
+                                            : const BookShimmer()),
+                                  if ((i * 3) + 2 < fullSize)
+                                    Padding(
+                                        padding: const EdgeInsets.only(left: 20.0),
+                                        child: (state.status == Status.SUCCESS)
+                                            ? BookItem(
+                                                book: state.books ?? [],
+                                                tag: 'search',
+                                                index: (i * 3) + 2,
+                                              )
+                                            : const BookShimmer()),
+                                ],
                               ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              } else if (state is SearchError) {
-                return Center(
-                    child: Text('Failed to load books: ${state.message}'));
-              } else {
-                return Container();
-              }
-            },
-          ))
-        ],
+                              const SizedBox(height: 20)
+                            ],
+                          ),
+                      ],
+                    ),
+                  );
+                }
+              },
+            )
+          ],
+        ),
       ),
     );
   }

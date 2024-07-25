@@ -2,7 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 
 import '../../../data/pref/my_shared.dart';
-import '../../../domain/repository_auth.dart';
+import '../../../domain/impl/repository_auth.dart';
 
 part 'login_event.dart';
 part 'login_state.dart';

@@ -27,8 +27,7 @@ class _PDFScreenState extends State<PDFScreen> {
 
   Future<void> _downloadAndSavePdf(String url) async {
     try {
-      final response =
-          await http.Client().send(http.Request('GET', Uri.parse(url)));
+      final response = await http.Client().send(http.Request('GET', Uri.parse(url)));
       final totalBytes = response.contentLength ?? 0;
       int downloadedBytes = 0;
 
@@ -37,33 +36,41 @@ class _PDFScreenState extends State<PDFScreen> {
 
       final bytes = <int>[];
       response.stream.listen(
-        (List<int> newBytes) {
+            (List<int> newBytes) {
           bytes.addAll(newBytes);
           downloadedBytes += newBytes.length;
-          setState(() {
-            _progress = downloadedBytes / totalBytes;
-          });
+          if (mounted) {
+            setState(() {
+              _progress = downloadedBytes / totalBytes;
+            });
+          }
         },
         onDone: () async {
           await file.writeAsBytes(bytes, flush: true);
-          setState(() {
-            localPath = file.path;
-            isLoading = false;
-          });
+          if (mounted) {
+            setState(() {
+              localPath = file.path;
+              isLoading = false;
+            });
+          }
         },
         onError: (e) {
           print("Error downloading PDF: $e");
-          setState(() {
-            isLoading = false;
-          });
+          if (mounted) {
+            setState(() {
+              isLoading = false;
+            });
+          }
         },
         cancelOnError: true,
       );
     } catch (e) {
       print("Error downloading PDF: $e");
-      setState(() {
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 
@@ -73,37 +80,36 @@ class _PDFScreenState extends State<PDFScreen> {
       appBar: AppBar(title: const Text('PDF Viewer')),
       body: isLoading
           ? Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Center(child: CircularProgressIndicator()),
-                const SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: LinearProgressIndicator(value: _progress),
-                ),
-                const SizedBox(height: 20),
-                Text('${(_progress * 100).toStringAsFixed(0)}%'),
-              ],
-            )
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Center(child: CircularProgressIndicator()),
+          const SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: LinearProgressIndicator(value: _progress),
+          ),
+          const SizedBox(height: 20),
+          Text('${(_progress * 100).toStringAsFixed(0)}%'),
+        ],
+      )
           : localPath != null
-              ? PDFView(
-                  filePath: localPath,
-                  enableSwipe: true,
-                  swipeHorizontal: false,
-                  // Vertikal skroll uchun false qilindi
-                  autoSpacing: false,
-                  pageFling: false,
-                  onRender: (pages) {
-                    setState(() {});
-                  },
-                  onError: (error) {
-                    print(error.toString());
-                  },
-                  onPageError: (page, error) {
-                    print('$page: ${error.toString()}');
-                  },
-                )
-              : const Center(child: Text('Failed to load PDF')),
+          ? PDFView(
+        filePath: localPath,
+        enableSwipe: true,
+        swipeHorizontal: false,
+        autoSpacing: false,
+        pageFling: false,
+        onRender: (pages) {
+          setState(() {});
+        },
+        onError: (error) {
+          print(error.toString());
+        },
+        onPageError: (page, error) {
+          print('$page: ${error.toString()}');
+        },
+      )
+          : const Center(child: Text('Failed to load PDF')),
     );
   }
 }

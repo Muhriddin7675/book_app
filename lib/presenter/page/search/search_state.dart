@@ -1,26 +1,16 @@
 part of 'search_bloc.dart';
 
-abstract class SearchState extends Equatable {
-  @override
-  List<Object> get props => [];
-}
+class SearchState {
+  final List<BookData>? books;
+  final Status? status;
+  final String? errorMessage;
 
-class SearchLoading extends SearchState {}
+  SearchState({this.books, this.status, this.errorMessage});
 
-class SearchLoaded extends SearchState {
-  final List<BookData> books;
-
-  SearchLoaded(this.books);
-
-  @override
-  List<Object> get props => [books];
-}
-
-class SearchError extends SearchState {
-  final String message;
-
-  SearchError(this.message);
-
-  @override
-  List<Object> get props => [message];
+  SearchState copyWith({
+    final List<BookData>? books,
+    final Status? status,
+    final String? errorMessage,
+  }) =>
+      SearchState(books: books ?? this.books, status: status ?? this.status, errorMessage: errorMessage ?? this.errorMessage);
 }

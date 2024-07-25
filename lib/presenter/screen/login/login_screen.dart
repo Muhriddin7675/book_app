@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_firabase_book_app/util/utils.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-import '../main/main.dart';
+import '../main/bottom_navigation.dart';
+import '../register/register_bloc.dart';
+import '../register/register_screen.dart';
 import 'login_bloc.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -39,16 +42,14 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: BlocListener<LoginBloc, LoginState>(
         listener: (context, state) {
-
           if (state is LoginInitial) {
             if (state.hasSignIn) {
               Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(
-                    builder: (context) => const Main()),
-                    (Route<dynamic> route) => false,
+                MaterialPageRoute(builder: (context) => const BottomNavigation()),
+                (Route<dynamic> route) => false,
               );
             } else if (!state.hasSignIn && state.message.isNotEmpty) {
               Fluttertoast.showToast(
@@ -72,42 +73,26 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Container(
                     width: double.infinity,
                     height: double.infinity,
-                    decoration: const BoxDecoration(
-                        image: DecorationImage(
-                            image: AssetImage("assets/image_group_bg.png"),
-                            fit: BoxFit.fill)),
+                    decoration: const BoxDecoration(image: DecorationImage(image: AssetImage("assets/image_group_bg.png"), fit: BoxFit.fill)),
                     child: Padding(
                       padding: const EdgeInsets.only(left: 32.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const SizedBox(
-                            height: 24,
-                          ),
-                          InkWell(
+                          GestureDetector(
                             onTap: () {
-                              Navigator.pop(this.context);
+                              Navigator.pop(context);
                             },
-                            child: const Row(
-                              children: [
-                                Icon(
-                                  Icons.arrow_back,
-                                  color: Colors.black54,
-                                ),
-                                Text(
-                                  " Go Back",
-                                  style: TextStyle(
-                                      fontSize: 20, color: Colors.black54),
-                                )
-                              ],
+                            child: const Icon(
+                              Icons.arrow_back,
                             ),
                           ),
                           const SizedBox(
-                            height: 32,
+                            height: 24,
                           ),
                           SizedBox(
                             height: 100,
-                            width: 106,
+                            width: 100,
                             child: Image.asset(
                               "assets/ic_group.png",
                               fit: BoxFit.contain,
@@ -116,14 +101,15 @@ class _LoginScreenState extends State<LoginScreen> {
                           const SizedBox(
                             height: 24,
                           ),
-                          const Text(
-                            "Welcome Back",
-                            style: TextStyle(fontSize: 24, color: Colors.black),
+                          Text(
+                            "Xush kelibsiz",
+                            style: TextStyle(fontSize: 24,
+                                fontWeight: FontWeight.w700,
+                                color: Theme.of(context).textTheme.bodyLarge?.color),
                           ),
-                          const Text(
-                            "Sign In to continue",
-                            style:
-                                TextStyle(fontSize: 20, color: Colors.black54),
+                          Text(
+                            "Davom etish uchun tizimga kiring",
+                            style: TextStyle(fontSize: 18, color: Theme.of(context).textTheme.bodySmall?.color),
                           ),
                         ],
                       ),
@@ -142,7 +128,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         onChanged: (value) => _handleTextChanged(),
                         cursorColor: const Color(0xffe95757),
                         decoration: InputDecoration(
-                          border: const UnderlineInputBorder(),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 1.0),
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: redColor, width: 1.0),
+                          ),
                           suffixIcon: InkWell(
                             onTap: () {
                               _controllerEmail.text = '';
@@ -152,7 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               color: Color(0xff8E8E93),
                             ),
                           ),
-                          labelText: 'Email Address',
+                          labelText: 'E-pochta manzili',
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -161,9 +152,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         controller: _controllerPassword,
                         onChanged: (value) => _handleTextChanged(),
                         obscureText: obscureText1,
-                        cursorColor: const Color(0xffe95757),
+                        cursorColor: redColor,
                         decoration: InputDecoration(
-                          border: const UnderlineInputBorder(),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 1.0),
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: redColor, width: 1.0),
+                          ),
                           suffixIcon: InkWell(
                             onTap: () {
                               setState(() {
@@ -171,28 +167,23 @@ class _LoginScreenState extends State<LoginScreen> {
                               });
                             },
                             child: Icon(
-                              obscureText1
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
+                              obscureText1 ? Icons.visibility_off : Icons.visibility,
                               color: const Color(0xff8E8E93),
                             ),
                           ),
-                          labelText: 'Password',
+                          labelText: 'Parol',
                         ),
                       ),
-
                       const SizedBox(height: 48),
                       InkWell(
+                        borderRadius: BorderRadius.circular(24),
                         onTap: () {
                           // Define your onPressed action here
                           if (_controllerPassword.text.length >= 8 && _controllerEmail.text.endsWith("@gmail.com")) {
-                            context.read<LoginBloc>().add(
-                                LoginUserEmailInPassword(_controllerEmail.text,
-                                    _controllerPassword.text));
+                            context.read<LoginBloc>().add(LoginUserEmailInPassword(_controllerEmail.text, _controllerPassword.text));
                           } else if (_controllerPassword.text.length < 8) {
                             Fluttertoast.showToast(
-                                msg:
-                                    "Password 8 ta raqamdan iborat bo'lishi kerak!",
+                                msg: "Password 8 ta raqamdan iborat bo'lishi kerak!",
                                 toastLength: Toast.LENGTH_SHORT,
                                 gravity: ToastGravity.BOTTOM,
                                 timeInSecForIosWeb: 1,
@@ -201,35 +192,32 @@ class _LoginScreenState extends State<LoginScreen> {
                                 fontSize: 16.0);
                           }
                         },
-                        child: Padding(
+                        child: Container(
+                          height: 52,
+                          width: double.infinity,
                           padding: const EdgeInsets.symmetric(horizontal: 32),
-                          child: Container(
-                            height: 52,
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(24),
-                              color: const Color(0xffe95757),
-                            ),
-                            child: const Center(
-                              child: Text(
-                                "SIGN IN",
-                                style: TextStyle(
-                                    fontSize: 18, color: Colors.white),
-                              ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(24),
+                            color: redColor,
+                          ),
+                          child: const Center(
+                            child: Text(
+                              "Kirish",
+                              style: TextStyle(fontSize: 18, color: Colors.white),
                             ),
                           ),
                         ),
                       ),
                       const SizedBox(height: 24),
-                      const Text(
-                        "or sign in using",
+                      Text(
+                        "yoki yordamida tizimga kiring",
                         style: TextStyle(
-                          color: Colors.black45,
-                          fontSize: 16,
+                          color: Theme.of(context).textTheme.bodySmall?.color,
+                          fontSize: 14,
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(top: 8.0, bottom: 24),
+                        padding: const EdgeInsets.only(top: 24, bottom: 24),
                         child: SizedBox(
                           width: double.infinity,
                           child: Row(
@@ -255,18 +243,26 @@ class _LoginScreenState extends State<LoginScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text(
-                            "Don’t have an account?",
-                            style: TextStyle(fontSize: 14, color: Colors.black),
+                          Text(
+                            "Hisobingiz yo'qmi ? ",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Theme.of(context).textTheme.bodyLarge?.color,
+                            ),
                           ),
-                          InkWell(
+                          GestureDetector(
                             onTap: () {
-                              Navigator.pop(context);
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => BlocProvider(
+                                            create: (context) => RegisterBloc(),
+                                            child: const RegisterScreen(),
+                                          )));
                             },
-                            child: const Text(
-                              " Register",
-                              style: TextStyle(
-                                  fontSize: 14, color: Colors.redAccent),
+                            child: Text(
+                              " Ro'yxatdan o'tish",
+                              style: TextStyle(fontSize: 14, color: redColor),
                             ),
                           ),
                         ],

@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
 import '../../../data/pref/my_shared.dart';
-import '../../../domain/repository_auth.dart';
+import '../../../domain/impl/repository_auth.dart';
 
 part 'register_event.dart';
 part 'register_state.dart';

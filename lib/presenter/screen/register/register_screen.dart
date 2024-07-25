@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_firabase_book_app/presenter/screen/main/bottom_navigation.dart';
 import 'package:flutter_firabase_book_app/presenter/screen/register/register_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import '../login/login_bloc.dart';
-import '../login/login_screen.dart';
-import '../main/main.dart';
+import '../../../util/utils.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -44,21 +43,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: BlocListener<RegisterBloc, RegisterState>(
         listener: (context, state) {
           if (state is RegisterInitial) {
             if (state.hasRegister && state.message.isEmpty) {
-              print("RegisterInitial navigate");
-
               Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(
-                    builder: (context) => const Main()),
+                MaterialPageRoute(builder: (context) => const BottomNavigation()),
                 (Route<dynamic> route) => false,
               );
             } else if (!state.hasRegister && state.message.isNotEmpty) {
-              print("RegisterInitial toast");
-
               Fluttertoast.showToast(
                   msg: state.message,
                   toastLength: Toast.LENGTH_SHORT,
@@ -67,53 +61,39 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   backgroundColor: Colors.red,
                   textColor: Colors.white,
                   fontSize: 16.0);
-            }else{
-              print("else ");
-
-            }
+            } else {}
           }
         },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Expanded(
-                flex: 3,
+                flex: 4,
                 child: Padding(
                   padding: const EdgeInsets.only(top: 56, bottom: 36),
                   child: Container(
                     width: double.infinity,
                     height: double.infinity,
-                    decoration: const BoxDecoration(
-                        image: DecorationImage(
-                            image: AssetImage("assets/image_group_bg.png"),
-                            fit: BoxFit.fill)),
+                    decoration: const BoxDecoration(image: DecorationImage(image: AssetImage("assets/image_group_bg.png"), fit: BoxFit.fill)),
                     child: Padding(
                       padding: const EdgeInsets.only(left: 32.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Icon(
+                              Icons.arrow_back,
+                            ),
+                          ),
                           const SizedBox(
                             height: 24,
                           ),
-                          const Row(
-                            children: [
-                              Icon(
-                                Icons.arrow_back,
-                                color: Colors.black54,
-                              ),
-                              Text(
-                                " Go Back",
-                                style: TextStyle(
-                                    fontSize: 20, color: Colors.black54),
-                              )
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 32,
-                          ),
                           SizedBox(
                             height: 100,
-                            width: 106,
+                            width: 100,
                             child: Image.asset(
                               "assets/ic_group.png",
                               fit: BoxFit.contain,
@@ -123,13 +103,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             height: 24,
                           ),
                           Text(
-                            "Create an Account",
-                            style: TextStyle(fontSize: 24, color: Colors.black),
+                            "Akkaunt yarating",
+                            style: TextStyle(fontSize: 24, color: Theme.of(context).textTheme.bodyMedium?.color, fontWeight: FontWeight.w700),
                           ),
                           Text(
-                            "Register to continue",
-                            style:
-                                TextStyle(fontSize: 20, color: Colors.black54),
+                            "Davom etish uchun roʻyxatdan oʻting",
+                            style: TextStyle(fontSize: 18, color: Theme.of(context).textTheme.bodySmall?.color),
                           ),
                         ],
                       ),
@@ -137,7 +116,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 )),
             Expanded(
-                flex: 4,
+                flex: 6,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 32.0),
                   child: Column(
@@ -148,7 +127,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         onChanged: (value) => _handleTextChanged(),
                         cursorColor: const Color(0xffe95757),
                         decoration: InputDecoration(
-                          border: const UnderlineInputBorder(),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 1.0),
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: redColor, width: 1.0),
+                          ),
                           suffixIcon: InkWell(
                             onTap: () {
                               _controllerEmail.text = '';
@@ -169,7 +153,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         obscureText: obscureText1,
                         cursorColor: const Color(0xffe95757),
                         decoration: InputDecoration(
-                          border: const UnderlineInputBorder(),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 1.0),
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: redColor, width: 1.0),
+                          ),
                           suffixIcon: InkWell(
                             onTap: () {
                               setState(() {
@@ -177,9 +166,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               });
                             },
                             child: Icon(
-                              obscureText1
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
+                              obscureText1 ? Icons.visibility_off : Icons.visibility,
                               color: const Color(0xff8E8E93),
                             ),
                           ),
@@ -194,7 +181,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         obscureText: obscureText2,
                         cursorColor: const Color(0xffe95757),
                         decoration: InputDecoration(
-                          border: const UnderlineInputBorder(),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 1.0),
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: redColor, width: 1.0),
+                          ),
                           suffixIcon: InkWell(
                             onTap: () {
                               setState(() {
@@ -202,9 +194,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               });
                             },
                             child: Icon(
-                              obscureText2
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
+                              obscureText2 ? Icons.visibility_off : Icons.visibility,
                               color: const Color(0xff8E8E93),
                             ),
                           ),
@@ -216,37 +206,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         onTap: () {
                           // Define your onPressed action here
                           if (_controllerPassword.text.length >= 8 &&
-                              _controllerConfirmPassword.text ==
-                                  _controllerPassword.text &&
+                              _controllerConfirmPassword.text == _controllerPassword.text &&
                               _controllerEmail.text.endsWith("@gmail.com")) {
-                            print("sent register");
-                            context.read<RegisterBloc>().add(
-                                RegisterUserEmailInPassword(
-                                    _controllerEmail.text,
-                                    _controllerPassword.text));
+                            context.read<RegisterBloc>().add(RegisterUserEmailInPassword(_controllerEmail.text, _controllerPassword.text));
                           } else if (_controllerPassword.text.length < 8) {
                             Fluttertoast.showToast(
-                                msg:
-                                    "Password 8 ta raqamdan iborat bo'lishi kerak!",
+                                msg: "Password 8 ta raqamdan iborat bo'lishi kerak!",
                                 toastLength: Toast.LENGTH_SHORT,
                                 gravity: ToastGravity.BOTTOM,
                                 timeInSecForIosWeb: 1,
                                 backgroundColor: Colors.red,
                                 textColor: Colors.white,
                                 fontSize: 16.0);
-                          } else if (_controllerConfirmPassword.text ==
-                              _controllerPassword.text) {
+                          } else if (_controllerConfirmPassword.text == _controllerPassword.text) {
                             Fluttertoast.showToast(
-                                msg:
-                                    "Pasworda va qayta kirtilgan pasword teng emas!",
+                                msg: "Pasworda va qayta kirtilgan pasword teng emas!",
                                 toastLength: Toast.LENGTH_SHORT,
                                 gravity: ToastGravity.BOTTOM,
                                 timeInSecForIosWeb: 1,
                                 backgroundColor: Colors.red,
                                 textColor: Colors.white,
                                 fontSize: 16.0);
-                          } else if (!_controllerEmail.text
-                              .endsWith("@gmail.com")) {
+                          } else if (!_controllerEmail.text.endsWith("@gmail.com")) {
                             Fluttertoast.showToast(
                                 msg: "Email xato kiritildi!",
                                 toastLength: Toast.LENGTH_SHORT,
@@ -264,26 +245,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             width: double.infinity,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(24),
-                              color: const Color(0xffe95757),
+                              color: redColor,
                             ),
                             child: const Center(
                               child: Text(
-                                "REGISTER",
-                                style: TextStyle(
-                                    fontSize: 18, color: Colors.white),
+                                "Ro'yxatdan o'tish",
+                                style: TextStyle(fontSize: 18, color: Colors.white),
                               ),
                             ),
                           ),
                         ),
                       ),
                       const SizedBox(height: 24),
-                      const Text(
-                        "or register using",
+                      Text(
+                        "yoki ro'yxatdan o'ting",
                         style: TextStyle(
-                          color: Colors.black45,
-                          fontSize: 16,
+                          color: Theme.of(context).textTheme.bodySmall?.color,
+                          fontSize: 14,
                         ),
                       ),
+                      const SizedBox(height: 16),
                       Padding(
                         padding: const EdgeInsets.only(top: 8.0, bottom: 24),
                         child: SizedBox(
@@ -311,24 +292,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text(
-                            "Already have an account?",
-                            style: TextStyle(fontSize: 14, color: Colors.black),
+                          Text(
+                            "Hisobingiz bormi ? ",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Theme.of(context).textTheme.bodySmall?.color,
+                            ),
                           ),
-                          InkWell(
+                          GestureDetector(
                             onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => BlocProvider(
-                                            create: (context) => LoginBloc(),
-                                            child: const LoginScreen(),
-                                          )));
+                              Navigator.pop(context);
                             },
-                            child: const Text(
-                              " Sign In",
-                              style: TextStyle(
-                                  fontSize: 14, color: Colors.redAccent),
+                            child: Text(
+                              " Kirish",
+                              style: TextStyle(fontSize: 14, color: redColor),
                             ),
                           ),
                         ],

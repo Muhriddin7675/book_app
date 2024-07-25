@@ -1,9 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_firabase_book_app/presenter/page/library/library_bloc.dart';
+import 'package:flutter_firabase_book_app/presenter/page/library/library_page.dart';
+import 'package:flutter_firabase_book_app/presenter/screen/all/all_bloc.dart';
+import 'package:flutter_firabase_book_app/presenter/screen/all/all_screen.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import '../../screen/now_playing/now_playing_screen.dart';
-import 'category_item.dart';
 import 'home_bloc.dart';
+import '../../../util/component/appbar.dart';
+import '../../../util/component/book_item.dart';
+import '../../../util/component/book_shimmer.dart';
+import '../../../util/component/category_item.dart';
+import '../../../util/component/category_shimmer.dart';
+import '../../../util/component/home_row_components.dart';
+import '../../../util/utils.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -12,243 +22,207 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
-    with SingleTickerProviderStateMixin {
-  var _category = "hammasi";
-  var listCategory = ['hammasi', "badiiy", "shaxsiy rivojlanish", "biografiya"];
+class _HomeScreenState extends State<HomeScreen> {
+  final bloc = HomeBloc();
+  final refreshController = RefreshController();
 
   @override
   void initState() {
     super.initState();
+    bloc.add(Init(categoryIndex: 0));
   }
 
-  // ignore: unused_field
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        forceMaterialTransparency: true,
-        backgroundColor: Colors.white,
-        title: const Center(
-          child: Text(
-            'Explore',
-            style: TextStyle(color: Colors.red, fontSize: 20),
+    return BlocProvider.value(
+      value: bloc,
+      child: Scaffold(
+          backgroundColor: Theme.of(context).colorScheme.background,
+          appBar: AppBarComponent(
+            appBarName: 'Kutubxona',
+            appBarColor: Theme.of(context).colorScheme.background,
+            textColor: redColor,
+            leadingIcon: null,
+            action: null,
           ),
-        ),
-        actions: const [
-          Icon(Icons.more_vert, color: Colors.black54),
-          SizedBox(width: 24),
-        ],
-        leading: const Icon(Icons.arrow_back, color: Colors.black54),
-      ),
-      body: Column(
-        children: [
-          BlocConsumer<HomeBloc, HomeState>(
+          body: BlocListener<HomeBloc, HomeState>(
             listener: (context, state) {
-              // TODO: implement listener
-            },
-            builder: (context, state) {
-              return SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 24.0, vertical: 8.0),
-                  child: Row(
-                    children: [
-                      CategoryItem(
-                          colorIndex: 0,
-                          isChosen: _category == listCategory[0],
-                          category: listCategory[0],
-                          onClick: () {
-                            context
-                                .read<HomeBloc>()
-                                .add(LoadBooks(listCategory[0]));
-                            _category = listCategory[0];
-                          }),
-                      CategoryItem(
-                          colorIndex: 1,
-                          isChosen: _category == listCategory[1],
-                          category: listCategory[1],
-                          onClick: () {
-                            context
-                                .read<HomeBloc>()
-                                .add(LoadBooks(listCategory[1]));
-                            _category = listCategory[1];
-                          }),
-                      CategoryItem(
-                          colorIndex: 2,
-                          isChosen: _category == listCategory[2],
-                          category: listCategory[2],
-                          onClick: () {
-                            context
-                                .read<HomeBloc>()
-                                .add(LoadBooks(listCategory[2]));
-                            _category = listCategory[2];
-                          }),
-                      CategoryItem(
-                          colorIndex: 3,
-                          category: listCategory[3],
-                          isChosen: _category == listCategory[3],
-                          onClick: () {
-                            context
-                                .read<HomeBloc>()
-                                .add(LoadBooks(listCategory[3]));
-                            _category = listCategory[3];
-                          }),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-          Expanded(child: BlocBuilder<HomeBloc, HomeState>(
-            builder: (context, state) {
-              if (state is HomeLoading) {
-                return const Center(child: CircularProgressIndicator());
+              if (state.status != Status.LOADING) {
+                refreshController.refreshCompleted();
               }
-              else if (state is HomeLoaded) {
-                return SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      const Padding(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 16.0, vertical: 4),
-                        child: Row(
-                          children: [
-                            Text(
-                              "New Releases Book",
-                              style:
-                                  TextStyle(fontSize: 24, color: Colors.black),
-                            ),
-                            Spacer(),
-                            Text(
-                              "See All",
-                              style: TextStyle(
-                                  fontSize: 16, color: Colors.redAccent),
-                            )
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: 160,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: state.allBooks.length,
-                            itemBuilder: (context, index) {
-                              return Card(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                shadowColor: Colors.white54,
-                                elevation: 10,
-                                child: InkWell(
-                                  onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                NowPlayingScreen(
-                                                    bookList: state.allBooks,
-                                                    index: index)));
-                                  },
-                                  child: Container(
-                                    width: 120,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(12),
-                                      image: DecorationImage(
-                                        image: NetworkImage(
-                                            state.allBooks[index].image),
-                                        fit: BoxFit.fill,
+            },
+            child: SmartRefresher(
+              onRefresh: () => bloc.add(Init(categoryIndex: 0)),
+              header: const ClassicHeader(),
+              controller: refreshController,
+              child: ListView(
+                physics: const BouncingScrollPhysics(),
+                children: [
+                  HomeRowComponents(
+                    componentName: 'Ommabop kitoblar',
+                    clickAll: () {
+                      if(context.read<HomeBloc>().state.allBooks != null) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (ctx) => BlocProvider(
+                                    create: (ctxCreate) => AllBloc()..add(AllLoadEvent(listBook: context.read<HomeBloc>().state.allBooks ?? [])),
+                                    child: const AllScreen(categoryName: "Ommabop kitoblar"),
+                                  )));
+                      }
+                    },
+                  ),
+                  BlocBuilder<HomeBloc, HomeState>(
+                    buildWhen: (previous, current) => (previous.books) != (current.books),
+                    builder: (context, state) {
+                      return SizedBox(
+                          height: 150,
+                          child: (state.status == Status.SUCCESS)
+                              ? ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: state.allBooks?.length,
+                                  physics: const BouncingScrollPhysics(),
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                      padding: EdgeInsets.only(
+                                          left: (index == 0) ? 20 : 10, right: (((state.allBooks?.length ?? 0) - 1) == index) ? 20 : 0),
+                                      child: BookItem(
+                                        book: state.allBooks!,
+                                        tag: '',
+                                        index: index,
                                       ),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Row(
-                          children: [
-                            Text(
-                              "Featured Books",
-                              style:
-                                  TextStyle(fontSize: 24, color: Colors.black),
-                            ),
-                            Spacer(),
-                            Text(
-                              "See All",
-                              style: TextStyle(
-                                  fontSize: 16, color: Colors.redAccent),
-                            )
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                        child: GridView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3,
-                            crossAxisSpacing: 4,
-                            mainAxisSpacing: 4,
-                            childAspectRatio: 3 / 4,
-                          ),
-                          itemCount: state.books.length,
-                          itemBuilder: (context, index) {
-                            return InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => NowPlayingScreen(
-                                            bookList: state.books,
-                                            index: index)));
-                              },
-                              child: Card(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                shadowColor: Colors.white54,
-                                elevation: 10,
-                                child: Container(
-                                  height: 146,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12),
-                                    image: DecorationImage(
-                                      image: NetworkImage(
-                                          state.books[index].image),
-                                      fit: BoxFit.fill,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
+                                    );
+                                  })
+                              : ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: 7,
+                                  physics: const BouncingScrollPhysics(),
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                        padding: EdgeInsets.only(left: (index == 0) ? 20 : 10, right: ((7 - 1) == index) ? 20 : 0),
+                                        child: const BookShimmer());
+                                  }));
+                    },
                   ),
-                );
-              } else if (state is HomeError) {
-                return Center(
-                    child: Text('Failed to load books: ${state.message}'));
-              } else {
-                return Container();
-              }
-            },
-          ))
-        ],
-      ),
+                  HomeRowComponents(
+                    componentName: 'Kategoriya',
+                    clickAll: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (ctx) => BlocProvider(
+                                    create: (context) => LibraryBloc()..add(LibraryLoadedEvent()),
+                                    child: const LibraryPage(),
+                                  )));
+                    },
+                  ),
+                  BlocBuilder<HomeBloc, HomeState>(
+                    builder: (context, state) {
+                      return SizedBox(
+                          height: 50,
+                          child: (state.status == Status.SUCCESS)
+                              ? ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: state.category?.length,
+                                  physics: const BouncingScrollPhysics(),
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                        padding: EdgeInsets.only(left: (index == 0) ? 20 : 10, right: ((7 - 1) == index) ? 20 : 0),
+                                        child: CategoryItem(
+                                          categoryColor: categoryColors[index],
+                                          categoryText: state.category![index],
+                                          isHasCategory: index == state.categoryIndex,
+                                          clickCategory: () {
+                                            if (state.categoryIndex != index) {
+                                              bloc.add(ByCategoryBookEvent(categoryIndex: index));
+                                            }
+                                          },
+                                        ));
+                                  })
+                              : ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: 7,
+                                  physics: const BouncingScrollPhysics(),
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                        padding: EdgeInsets.only(left: (index == 0) ? 20 : 10, right: ((7 - 1) == index) ? 20 : 0),
+                                        child: const CategoryShimmer());
+                                  }));
+                    },
+                  ),
+                  HomeRowComponents(
+                    componentName: 'Tavsiya etilgan kitoblar',
+                    clickAll: () {
+                      if(context.read<HomeBloc>().state.books != null) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (ctx) => BlocProvider(
+                                    create: (ctxCreate) => AllBloc()..add(AllLoadEvent(listBook: context.read<HomeBloc>().state.books!)),
+                                    child: const AllScreen(
+                                      categoryName: "Tavsiya etilgan kitoblar",
+                                    ),
+                                  )));
+                      }
+                    },
+                  ),
+                  BlocBuilder<HomeBloc, HomeState>(
+                      buildWhen: (previous, current) => (previous.books) != (current.books),
+                      builder: (context, state) {
+                        var fullSize = state.books?.length ?? 6;
+                        var temp = (fullSize % 3 == 0) ? 0 : 1;
+                        var size = (fullSize ~/ 3) + temp;
+
+                        return Column(
+                          children: [
+                            for (int i = 0; i < size; i++)
+                              Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      if ((i * 3) < fullSize)
+                                        Padding(
+                                            padding: const EdgeInsets.only(left: 20.0),
+                                            child: (state.status == Status.SUCCESS)
+                                                ? BookItem(
+                                                    book: state.books ?? [],
+                                                    tag: '_',
+                                                    index: (i * 3),
+                                                  )
+                                                : const BookShimmer()),
+                                      if ((i * 3) + 1 < fullSize)
+                                        Padding(
+                                            padding: const EdgeInsets.only(left: 20.0),
+                                            child: (state.status == Status.SUCCESS)
+                                                ? BookItem(
+                                                    book: state.books ?? [],
+                                                    tag: '_',
+                                                    index: (i * 3) + 1,
+                                                  )
+                                                : const BookShimmer()),
+                                      if ((i * 3) + 2 < fullSize)
+                                        Padding(
+                                            padding: const EdgeInsets.only(left: 20.0),
+                                            child: (state.status == Status.SUCCESS)
+                                                ? BookItem(
+                                                    book: state.books ?? [],
+                                                    tag: '_',
+                                                    index: (i * 3) + 2,
+                                                  )
+                                                : const BookShimmer()),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 20)
+                                ],
+                              ),
+                          ],
+                        );
+                      }),
+                  const SizedBox(height: 80)
+                ],
+              ),
+            ),
+          )),
     );
   }
 }
